@@ -108,15 +108,15 @@
    
    類似的特徵工程會擇一使用，如: ridge & lasso 擇一，避免關聯分析的權重不同
    
-   隨機森林以大於整體GINI平均值，來判定屬於重要指標
+       隨機森林以大於整體GINI平均值，來判定屬於重要指標
    
-   XGB以大於整體Gain平均值，來判定屬於重要指標
+       XGB以大於整體Gain平均值，來判定屬於重要指標
    
-   SVM以大於整體AAD平均值，來判定屬於重要指標
+       SVM以大於整體AAD平均值，來判定屬於重要指標
    
-   ridge迴歸以beta大於整體平均值，來判定屬於重要指標
+       ridge迴歸以beta大於整體平均值，來判定屬於重要指標
    
-   fisher score以落在前8名，來判定屬於重要指標
+       fisher score以落在前8名，來判定屬於重要指標
 
    ![image](https://user-images.githubusercontent.com/79561258/122148413-0dabb700-ce8d-11eb-8f93-92ba19333926.png)
 
