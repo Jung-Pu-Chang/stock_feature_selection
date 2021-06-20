@@ -138,6 +138,6 @@
 
 影片-前導版: https://www.youtube.com/watch?v=-ikwYKZIQtk 
 
-影片-完整版: 
+影片-完整版: https://www.youtube.com/watch?v=Ilt0X4h0ALc
 
 會議記錄: https://www.notion.so/32e24a35c85242aaba895f4611d95ea4
