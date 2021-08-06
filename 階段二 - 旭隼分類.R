@@ -7,57 +7,57 @@ library(xgboost)
 library(rminer) 
 library(glmnet)
 library(MLmetrics)
-¦°ÔG <- fread(file="D:\\2.¦°ÔG.csv",header=TRUE,stringsAsFactors = FALSE)
-#na½ð±¼
-any_na(¦°ÔG)
-¦°ÔG$¶i³õ <- as.factor(¦°ÔG$¶i³õ)
-¦°ÔG <- mutate(¦°ÔG,¦~=year(¦~¤ë¤é))
-#·Ó®É¶¡¤Á¡A·Ç½T«×³£¥u¦³3~4¦¨
-#traindata <- subset(¦°ÔG,¦~<2018)
+æ—­éš¼ <- fread(file="D:\\2.æ—­éš¼.csv",header=TRUE,stringsAsFactors = FALSE)
+#naè¸¢æŽ‰
+any_na(æ—­éš¼)
+æ—­éš¼$é€²å ´ <- as.factor(æ—­éš¼$é€²å ´)
+æ—­éš¼ <- mutate(æ—­éš¼,å¹´=year(å¹´æœˆæ—¥))
+#ç…§æ™‚é–“åˆ‡ï¼Œæº–ç¢ºåº¦éƒ½åªæœ‰3~4æˆ
+#traindata <- subset(æ—­éš¼,å¹´<2018)
 #traindata <- traindata[,-c(1:3,20)]
-#testdata <- subset(¦°ÔG,¦~>=2018)
+#testdata <- subset(æ—­éš¼,å¹´>=2018)
 #testdata <- testdata[,-c(1:3,20)]
-n <- nrow(¦°ÔG)
+n <- nrow(æ—­éš¼)
 set.seed(1117)
 random <- sample(seq_len(n), size = round(0.7 * n))
-traindata <- ¦°ÔG[random,-c(1:3,20)]
-testdata <- ¦°ÔG[-random,-c(1:3,20)]
+traindata <- æ—­éš¼[random,-c(1:3,20)]
+testdata <- æ—­éš¼[-random,-c(1:3,20)]
 
 
 ##rf ####
-features <- setdiff(x = names(traindata), y = "¶i³õ")
+features <- setdiff(x = names(traindata), y = "é€²å ´")
 set.seed(123)
-tuneRF(x = traindata[features], y = traindata$¶i³õ,
+tuneRF(x = traindata[features], y = traindata$é€²å ´,
        mtryStart = 1,ntreeTry = 500)
-rf_model <- randomForest(¶i³õ~., data = traindata,
+rf_model <- randomForest(é€²å ´~., data = traindata,
                            ntree = 5000, mtry = 4,
                            do.trace = 100,na.action = na.roughfix)
 rf_future <- predict(rf_model,testdata)
 rf_future <- as.data.frame(rf_future)
 rf_final <- cbind(rf_future,testdata)
-confusion <- table(rf_final$¶i³õ,rf_final$rf_future, dnn = c("¹ê»Ú", "¹w´ú"))
+confusion <- table(rf_final$é€²å ´,rf_final$rf_future, dnn = c("å¯¦éš›", "é æ¸¬"))
 confusion
 accuracy <- sum(diag(confusion)) / sum(confusion)
 accuracy # 84.6%
-F1_Score(rf_final$¶i³õ, rf_final$rf_future, positive = NULL)
+F1_Score(rf_final$é€²å ´, rf_final$rf_future, positive = NULL)
 rf <- importance(rf_model)
 varImpPlot(rf_model)
-#write.table(rf_final, file="D:\\¦°ÔG_2018«á.csv", sep = ",", na = "", row.names=FALSE, col.names = TRUE)
+#write.table(rf_final, file="D:\\æ—­éš¼_2018å¾Œ.csv", sep = ",", na = "", row.names=FALSE, col.names = TRUE)
 
 ## svm ####
-tune.model <- tune.svm(¶i³õ~.,data=traindata,type="C-classification",kernel="radial",
+tune.model <- tune.svm(é€²å ´~.,data=traindata,type="C-classification",kernel="radial",
                        range=list(cost = 2^c(-8,-4,-2,0), epsilon = seq(0,10,0.1),gamma = 2^c(-8,-4,0,4)))
-tune.model$best.model #¬D lowest MSE 
-svm_model <- svm(¶i³õ~.,data=traindata,type="C-classification",kernel="radial",cost=1)
+tune.model$best.model #æŒ‘ lowest MSE 
+svm_model <- svm(é€²å ´~.,data=traindata,type="C-classification",kernel="radial",cost=1)
 svm_future <- predict(svm_model,testdata)
 svm_future <- as.data.frame(svm_future)
 svm_final <- cbind(svm_future,testdata)
-confusion <- table(svm_final$¶i³õ,svm_final$svm_future, dnn = c("¹ê»Ú", "¹w´ú"))
+confusion <- table(svm_final$é€²å ´,svm_final$svm_future, dnn = c("å¯¦éš›", "é æ¸¬"))
 confusion
 accuracy <- sum(diag(confusion)) / sum(confusion)
 accuracy # 64%
 
-svm_model <- fit(¶i³õ~.,data=traindata,model="svm",
+svm_model <- fit(é€²å ´~.,data=traindata,model="svm",
              kpar=list(sigma=0.1),C=1)
 svm <- Importance(svm_model,traindata,measure="AAD")
 svm <- svm$imp
@@ -66,9 +66,9 @@ mgraph(L,graph="IMP",leg=names(traindata),col="gray",Grid=10)
 
 ## xgb ####
 trainx <- traindata[,c(-16)] %>% as.matrix()
-trainy <- as.numeric(as.factor(traindata$¶i³õ))-1
+trainy <- as.numeric(as.factor(traindata$é€²å ´))-1
 testx <- testdata[,c(-16)] %>% as.matrix()
-testy <- as.numeric(as.factor(testdata$¶i³õ))-1
+testy <- as.numeric(as.factor(testdata$é€²å ´))-1
 
 set.seed(123)
 xgb_model <-  xgboost(data = trainx,
@@ -80,7 +80,7 @@ xgb_model <-  xgboost(data = trainx,
 xgb_future <- predict(xgb_model,testx)
 xgb_future <- as.data.frame(xgb_future)
 xgb_final <- cbind(xgb_future,testdata)
-confusion <- table(xgb_final$¶i³õ,xgb_final$xgb_future, dnn = c("¹ê»Ú", "¹w´ú"))
+confusion <- table(xgb_final$é€²å ´,xgb_final$xgb_future, dnn = c("å¯¦éš›", "é æ¸¬"))
 confusion
 accuracy <- sum(diag(confusion)) / sum(confusion)
 accuracy # 83%
@@ -89,23 +89,23 @@ importance <- xgb.importance(model = xgb_model)
 par(mfrow=c(1,1))
 xgb.plot.importance(importance, top_n = 20, measure = "Gain")
 
-## ¨ä¥L¯S¼x¿z¿ïªk ####
-# ridge & lasso ºâ¦¨0,1¶¡ªº­È »Ý¥t¥~©w¸qxx
+## å…¶ä»–ç‰¹å¾µç¯©é¸æ³• ####
+# ridge & lasso ç®—æˆ0,1é–“çš„å€¼ éœ€å¦å¤–å®šç¾©xx
 
 trainx <- traindata[,c(-16)] %>% as.matrix()
-trainy <- as.factor(traindata$¶i³õ) 
+trainy <- as.factor(traindata$é€²å ´) 
 testx <- testdata[,c(-16)] %>% as.matrix()
-testy <- as.factor(testdata$¶i³õ)
+testy <- as.factor(testdata$é€²å ´)
 ridege_model <- cv.glmnet(x = trainx,y = trainy,alpha = 0,
                           family = "multinomial")
-# ¦h­Ómultinomial ¨â­Óbinomial
-#¥æ¤eÅçÃÒ ¹w³]k=10¡Aalpha = 0¬°ridege_model, =1¬°lasso
+# å¤šå€‹multinomial å…©å€‹binomial
+#äº¤å‰é©—è­‰ é è¨­k=10ï¼Œalpha = 0ç‚ºridege_model, =1ç‚ºlasso
 ridege_model
-#¿ï¦ÛÅÜ¶q
+#é¸è‡ªè®Šé‡
 coef(ridege_model, ridege_model$lambda.1se)
 
 library(Rdimtools)
-¦°ÔG.dat = as.matrix(¦°ÔG[,4:18])
-¦°ÔG.lab = as.factor(¦°ÔG[,19])
-fsocre = do.fscore(¦°ÔG.dat, ¦°ÔG.lab, ndim = 8)
-fsocre$featidx #¯S¼x­«­n©Ê±Æ§Ç
+æ—­éš¼.dat = as.matrix(æ—­éš¼[,4:18])
+æ—­éš¼.lab = as.factor(æ—­éš¼[,19])
+fsocre = do.fscore(æ—­éš¼.dat, æ—­éš¼.lab, ndim = 8)
+fsocre$featidx #ç‰¹å¾µé‡è¦æ€§æŽ’åº
